@@ -6,7 +6,7 @@ This package should work with ESModules as well as CommonJS. The code will be ge
 
 ### Links
 - https://developer.shvenergy.com/ - API Portal with the official API documentation and the ability to create some sort of keys
-- NPM Package - https://npmjs.com/ todo
+- NPM Package - https://www.npmjs.com/package/@trickfilm400/shvenergy-api-client
 
 &copy; 2023
 
