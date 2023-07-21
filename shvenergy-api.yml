@@ -1,0 +1,1125 @@
+openapi: 3.0.0
+info:
+  title: SHVEnergy API
+  version: '1.0'
+  contact:
+    name: Trickfilm400
+    url: 'https://github.com/trickfilm400'
+    email: trickfilm400@gmail.com
+  description: |-
+    API Reference of the SHVEnergy API
+
+    Based on API on the 19.07.2023 via Browser Devtools
+servers:
+  - url: 'https://api.shvenergy.com'
+paths:
+  '/customers-api/v1/business-units/DE-PG/accounts/{customerNumber}':
+    get:
+      summary: Get Account
+      tags:
+        - api
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                    readOnly: true
+                  lastName:
+                    type: string
+                    readOnly: true
+                  email:
+                    type: string
+                    format: email
+                    readOnly: true
+                  mobileNumber:
+                    type: string
+                    readOnly: true
+                  phoneNumber:
+                    type: string
+                    readOnly: true
+                  hasMeters:
+                    type: boolean
+                    readOnly: true
+                  hasManualTanks:
+                    type: boolean
+                    readOnly: true
+                  hasTelemetryTanks:
+                    type: boolean
+                    readOnly: true
+                  hasPaperlessInvoice:
+                    type: string
+                    enum:
+                      - 'Yes'
+                      - 'No'
+                    example: 'Yes'
+                    readOnly: true
+                readOnly: true
+      operationId: get-customers-api-v1-business-units-DE-PG-accounts-customerNumber
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+      description: 'Returns the basic account information like Name, Email and Phone Numbers'
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/customer-portals-api/v1/business-units/DE-PG/accounts/{customerNumber}/delivery-points':
+    get:
+      summary: Get Delivery Points
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Delivery-Points'
+      operationId: get-customer-portals-api-v1-business-units-DE-PG-accounts-customerNumber-delivery-points
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+      description: Returns an array list of all delivery points
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/orders-api/v1/business-units/DE-PG/accounts/{customerNumber}/orders':
+    get:
+      summary: Get Orders
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Order-Response'
+      operationId: get-orders-api-v1-business-units-DE-PG-accounts-customerNumber-orders
+      parameters:
+        - schema:
+            type: string
+            default: orderStatusCategory eq 'Open' and limit eq 20
+          in: query
+          name: $filter
+          description: some DB Filter Syntax
+          allowEmptyValue: true
+        - $ref: '#/components/parameters/Sub-Key'
+      security:
+        - API Key: [ ]
+      description: Get orders
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/assets-api/v1/business-units/DE-PG/accounts/{customerNumber}/delivery-points/{assetId}/assets':
+    get:
+      summary: Get assets by delivery endpoint
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Asset-Response'
+      operationId: get-assets-api-v1-business-units-DE-PG-accounts-customerNumber-delivery-points-customerNumber_T_1-assets
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            default: (assetType eq 'tank')
+          in: query
+          name: $filter
+          allowEmptyValue: true
+      description: Get assets
+    parameters:
+      - schema:
+          type: string
+        name: assetId
+        in: path
+        required: true
+        description: See in the delivery endpoint response
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/assets-api/v1/business-units/DE-PG/accounts/{customerNumber}/delivery-points/{deliveryId}/assets/{assetId}/readings':
+    get:
+      summary: Get asset Readings
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Readings-Response'
+      operationId: get-assets-api-v1-business-units-DE-PG-accounts-customerNumber-delivery-points-customerNumber_T_1-assets-customerNumber_T_1-readings
+      description: |-
+        Get some asset readings, for example tank data
+
+        For the Filter Query, there are different possibilities:
+
+        readingDateTime%20ge%20%272023-07-01T00%3A00%3A00Z%27%20and%20readingDateTime%20le%20%272023-07-31T23%3A59%3A59Z%27%20and%20limit%20eq%2020
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            enum:
+              - Tank
+          in: header
+          name: assetType
+          description: other values will be possible
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: $filter
+          description: Filter Data
+          allowEmptyValue: true
+    parameters:
+      - name: customerNumber
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Customer Number
+      - schema:
+          type: string
+        name: deliveryId
+        in: path
+        required: true
+        description: probably customer number with "_T_1"
+      - schema:
+          type: string
+        name: assetId
+        in: path
+        required: true
+        description: probably customer number with "_T_1"
+  '/payments-api/v1/business-units/DE-PG/accounts/{customerNumber}/invoices':
+    get:
+      summary: Get invoices
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Invoice-Response'
+      operationId: get-payments-api-v1-business-units-DE-PG-accounts-customerNumber-invoices
+      security:
+        - API Key: [ ]
+      parameters:
+        - schema:
+            type: string
+            default: orderStatusCategory%20eq%20%27Open%27%20and%20limit%20eq%2020
+          in: query
+          name: $filter
+          allowEmptyValue: true
+        - $ref: '#/components/parameters/Sub-Key'
+      description: Get invoices
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/assets-api/v1/business-units/DE-PG/accounts/{customerNumber}/delivery-points/{deliveryId}/assets/{assetId}/Consumptions':
+    post:
+      summary: Get Consumption Data
+      operationId: post-assets-api-v1-business-units-DE-PG-accounts-customerNumber-delivery-points-customerNumber_T_1-assets-customerNumber_T_1-Consumptions
+      responses:
+        '200':
+          $ref: '#/components/responses/Consumption-Response'
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+      security:
+        - API Key: [ ]
+      tags:
+        - api
+      description: |-
+        Some Consumption
+
+        The results array is not ordered by year, the entries are random
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+      - schema:
+          type: string
+        name: deliveryId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: assetId
+        in: path
+        required: true
+  '/customer-support-api/v1/business-units/DE-PG/accounts/{customerNumber}/queries':
+    get:
+      summary: Get Support Requests
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Queries-Response'
+      operationId: get-customer-support-api-v1-business-units-DE-PG-accounts-customerNumber-queries
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            default: level1Category ne '' and limit eq 9999
+          in: query
+          name: $filter
+          allowEmptyValue: true
+      description: 'unknown response yet, but request support queries'
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/contract-api/v1/business-units/DE-PG/accounts/{customerNumber}/contracts':
+    get:
+      summary: Get contracts
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Contracts-Response'
+      operationId: get-contract-api-v1-business-units-DE-PG-accounts-customerNumber-contracts
+      description: Contracts
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            default: deliveryAddressId%20eq
+          in: query
+          name: $filter
+          allowEmptyValue: true
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/communications-api/v2/business-units/DE-PG/accounts/{customerNumber}/permission-types':
+    get:
+      summary: Get communications permissions
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Communications-Permissions-Response'
+      operationId: get-communications-api-v2-business-units-DE-PG-accounts-customerNumber-permission-types
+      description: Get permission types
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            example: userId eq '<uuid>'
+          in: query
+          name: $filter
+          allowEmptyValue: true
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+  '/communications-api/v1/business-units/DE-PG/accounts/{customerNumber}/notification-types':
+    get:
+      summary: Get notification settings
+      tags:
+        - api
+      responses:
+        '200':
+          $ref: '#/components/responses/Communications-Notifications-Response'
+      operationId: get-communications-api-v1-business-units-DE-PG-accounts-customerNumber-notification-types
+      description: Get notification settings
+      security:
+        - API Key: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Sub-Key'
+        - schema:
+            type: string
+            example: userId eq '<uuid>'
+          in: query
+          name: $filter
+          allowEmptyValue: true
+    parameters:
+      - $ref: '#/components/parameters/CustomerNumber'
+components:
+  schemas: { }
+  parameters:
+    CustomerNumber:
+      name: customerNumber
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Customer Number
+    Sub-Key:
+      name: Ocp-Apim-Subscription-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        default: 127cab3c995c46debf6ede4612576c26
+  securitySchemes:
+    API Key:
+      type: http
+      scheme: bearer
+  responses:
+    Delivery-Points:
+      description: Response of the delivery endpoint
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    deliveryAddressId:
+                      type: string
+                      description: 'Format: "<customerNumber_ T _ < number >"'
+                      readOnly: true
+                    line1:
+                      type: string
+                      example: Street No 1
+                      description: Street Name with Number
+                      readOnly: true
+                    postalCode:
+                      type: string
+                      readOnly: true
+                    city:
+                      type: string
+                      example: Berlin
+                      readOnly: true
+                    stateOrProvince:
+                      type: string
+                      example: BE
+                      description: probably two-char string
+                      readOnly: true
+                    countryCode:
+                      type: string
+                      example: D
+                      description: probably few-char long country code
+                      readOnly: true
+                    phoneNumber:
+                      type: string
+                      readOnly: true
+                    mobileNumber:
+                      type: string
+                      readOnly: true
+                    email:
+                      type: string
+                      format: email
+                      readOnly: true
+                    stopGasIndicatorFinance:
+                      type: boolean
+                      readOnly: true
+                    stopGasIndicatorMaintenance:
+                      type: boolean
+                      readOnly: true
+                    allowOrderForDeliveryPoint:
+                      type: boolean
+                      readOnly: true
+                    totalAssetCapacityForOrder:
+                      type: integer
+                      example: 2750
+                      readOnly: true
+                    maximumFillingLevelPercentageForOrder:
+                      type: integer
+                      maximum: 100
+                      minimum: 0
+                      example: 85
+                      format: int32
+                      description: in percent
+                      readOnly: true
+                    maximumFillingVolumeForOrder:
+                      type: integer
+                      example: 2330
+                      readOnly: true
+                    currentLevelPercentageForOrder:
+                      type: integer
+                      minimum: 0
+                      maximum: 100
+                      example: 77
+                      format: int32
+                      description: in percent
+                      readOnly: true
+                    currentFillingVolumeForOrder:
+                      type: integer
+                      example: 220
+                      format: int32
+                      readOnly: true
+                    numberOfTanks:
+                      type: integer
+                      example: 1
+                      minimum: 0
+                      readOnly: true
+                    numberOfCylinders:
+                      type: integer
+                      minimum: 0
+                      example: 0
+                      readOnly: true
+                    numberOfMeters:
+                      type: integer
+                      example: 0
+                      minimum: 0
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: Customer Number
+                      readOnly: true
+                    billingAddress:
+                      type: object
+                      properties:
+                        billingAddressId:
+                          type: string
+                          description: 'Format: "<customer_number>_<number>"'
+                          readOnly: true
+                        line1:
+                          type: string
+                          description: Street Address with Number
+                          readOnly: true
+                        postalCode:
+                          type: string
+                          readOnly: true
+                        city:
+                          type: string
+                          readOnly: true
+                        stateOrProvince:
+                          type: string
+                          example: BE
+                          description: probably two-char long
+                          readOnly: true
+                        countryCode:
+                          type: string
+                          example: D
+                          description: probably few-char long
+                          readOnly: true
+                        phoneNumber:
+                          type: string
+                          readOnly: true
+                        mobileNumber:
+                          type: string
+                          readOnly: true
+                        email:
+                          type: string
+                          format: email
+                          readOnly: true
+                        hasPaperlessInvoice:
+                          type: string
+                          enum:
+                            - 'Yes'
+                            - 'No'
+                          example: 'Yes'
+                          readOnly: true
+                        agreementType:
+                          type: string
+                          example: Tank
+                          readOnly: true
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            enum:
+              - '2.0'
+    Order-Response:
+      description: Response of the Order Endpoint
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination:
+                type: object
+                additionalProperties: false
+                properties:
+                  count:
+                    type: integer
+                    minimum: 0
+                    readOnly: true
+                  limit:
+                    type: integer
+                    default: 20
+                    readOnly: true
+                  offset:
+                    type: integer
+                    default: 0
+                    readOnly: true
+                  total:
+                    type: integer
+                    readOnly: true
+                readOnly: true
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    orderType:
+                      type: string
+                      default: NA
+                      readOnly: true
+                    orderId:
+                      type: string
+                      readOnly: true
+                    orderCreatedDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    deliveryAddressId:
+                      type: string
+                      description: See Asset ID
+                      readOnly: true
+                    orderStatus:
+                      type: string
+                      description: other values will be possible
+                      readOnly: true
+                    orderedVolume:
+                      type: integer
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: customer Number
+                      readOnly: true
+                    priceBreakdown:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        LPGUnitPrice:
+                          type: number
+                          format: double
+                          example: 68.12
+                        grossTotalPrice:
+                          type: number
+                          format: double
+                          example: 73.123
+                          readOnly: true
+                      readOnly: true
+                  readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            enum:
+              - '2.0'
+    Asset-Response:
+      description: Asset response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              assets:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assetType:
+                      type: string
+                      enum:
+                        - Tank
+                      description: More values may be possible
+                      readOnly: true
+                    assetId:
+                      type: string
+                      description: asset ID like in the path parameter
+                      readOnly: true
+                    assetNumber:
+                      type: string
+                      readOnly: true
+                    assetDescription:
+                      type: string
+                      example: Tank
+                      readOnly: true
+                    assetCapacity:
+                      type: integer
+                      example: 2750
+                      readOnly: true
+                    assetStatus:
+                      type: string
+                      enum:
+                        - Active
+                      description: other values may be possible
+                      readOnly: true
+                    assetTelemetryEnabled:
+                      type: boolean
+                      readOnly: true
+                    hasCheckerNumber:
+                      type: boolean
+                      readOnly: true
+                    assetColor:
+                      type: string
+                      description: some color description with a RAL number
+                      readOnly: true
+                    assetInstallationType:
+                      type: string
+                      enum:
+                        - oberirdisch
+                      description: other values may be possible
+                      readOnly: true
+                    innerAssetLatestMaintenanceDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    outerAssetLatestMaintenanceDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    assetCurrentLevelPercentage:
+                      type: integer
+                      minimum: 0
+                      maximum: 100
+                      example: 77
+                      description: in percent
+                      readOnly: true
+                    assetMaximumFillingLevelPercentage:
+                      type: integer
+                      minimum: 0
+                      maximum: 100
+                      example: 85
+                      description: in percent
+                      readOnly: true
+                    allowOrderForTank:
+                      type: boolean
+                      readOnly: true
+                    isIncludedInDeliveryPointOrder:
+                      type: boolean
+                      readOnly: true
+                    assetMaximumFillingVolume:
+                      type: integer
+                      example: 2330
+                      readOnly: true
+                    assetCurrentFillingVolume:
+                      type: integer
+                      example: 2110
+                      readOnly: true
+                    stopGasIndicatorMaintenance:
+                      type: boolean
+                      readOnly: true
+                    tankForecast:
+                      type: object
+                      properties:
+                        forecastDateTime:
+                          type: string
+                          format: date-time
+                          readOnly: true
+                        estimatedCurrentFillingLevelPercentage:
+                          type: integer
+                          maximum: 100
+                          minimum: 0
+                          example: 77
+                          description: in percent
+                          readOnly: true
+                        replenishmentFillingLevelPercentage:
+                          type: integer
+                          example: 45
+                          minimum: 0
+                          maximum: 100
+                          description: in percent
+                          readOnly: true
+                        predictedReplenishmentOrderDate:
+                          type: string
+                          format: date-time
+                          readOnly: true
+                        predictedReplenishmentDeliveryDate:
+                          type: string
+                          format: date-time
+                          readOnly: true
+                        predictedReplenishmentDeliveryDateFillingLevelPercentage:
+                          type: integer
+                          minimum: 0
+                          maximum: 100
+                          example: 45
+                          description: in percent
+                          readOnly: true
+                        replenishmentVolumeToDeliverLiter:
+                          type: integer
+                          example: 935
+                          readOnly: true
+                        replenishmentWeightToDeliverKg:
+                          type: integer
+                          example: 490
+                          readOnly: true
+                        runoutFillingLevelPercentage:
+                          type: integer
+                          example: 40
+                          minimum: 0
+                          maximum: 100
+                          description: in percent
+                          readOnly: true
+                        predictedRunoutDate:
+                          type: string
+                          format: date-time
+                          readOnly: true
+                        stockLeftInDays:
+                          type: integer
+                          example: 530
+                          readOnly: true
+                        daysTillNextReading:
+                          type: integer
+                          example: 0
+                          readOnly: true
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+    Readings-Response:
+      description: Readings
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination:
+                type: object
+                additionalProperties: false
+                properties:
+                  count:
+                    type: integer
+                    readOnly: true
+                  limit:
+                    type: integer
+                    readOnly: true
+                  offset:
+                    type: integer
+                    readOnly: true
+                  total:
+                    type: integer
+                    readOnly: true
+                readOnly: true
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    readingDateTime:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    createdBy:
+                      type: string
+                      default: N/A
+                      enum:
+                        - N/A
+                      readOnly: true
+                    reading:
+                      type: integer
+                      minimum: 0
+                      maximum: 100
+                      example: 70
+                      description: in percent
+                      readOnly: true
+                    readingUnit:
+                      type: string
+                      enum:
+                        - '%'
+                      readOnly: true
+                    readingType:
+                      type: string
+                      default: N/A
+                      enum:
+                        - N/A
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            default: '2.0'
+    Invoice-Response:
+      description: Invoices
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination:
+                type: object
+                additionalProperties: false
+                properties:
+                  count:
+                    type: integer
+                    readOnly: true
+                  limit:
+                    type: integer
+                    readOnly: true
+                  offset:
+                    type: integer
+                    readOnly: true
+                  total:
+                    type: integer
+                    readOnly: true
+                readOnly: true
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    invoiceStatus:
+                      type: string
+                      enum:
+                        - Invoiced
+                      description: other values may be possible
+                      readOnly: true
+                    invoiceType:
+                      type: string
+                      enum:
+                        - Invoice
+                      description: other values may be possible
+                      readOnly: true
+                    invoiceId:
+                      type: string
+                      description: number as string
+                      readOnly: true
+                    invoiceNumber:
+                      type: string
+                      description: number as string
+                      readOnly: true
+                    invoiceDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    totalAmount:
+                      type: number
+                      format: double
+                      example: 1338.12
+                      readOnly: true
+                    paymentMethod:
+                      type: string
+                      enum:
+                        - Direct_debit
+                      description: other values may be possible
+                      readOnly: true
+                    billingAddressId:
+                      type: string
+                      description: billing ID from the other endpoint
+                      readOnly: true
+                    invoiceAmount:
+                      type: number
+                      format: double
+                      example: 1338.12
+                      description: should be mostly equal with totalAmount
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: account ID (number as string)
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            default: '2.0'
+    Consumption-Response:
+      description: Consumptions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    consumptionYear:
+                      type: integer
+                      example: 2022
+                      readOnly: true
+                    periodName:
+                      type: string
+                      example: '2022'
+                      description: 'same as consumptionYear, but as string?!'
+                      readOnly: true
+                    totalConsumption:
+                      type: integer
+                      example: 5000
+                      readOnly: true
+                    UoM:
+                      type: string
+                      enum:
+                        - Liter
+                      description: other values may be possible
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+    Queries-Response:
+      description: unknown response to this point
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    readOnly: true
+                  offset:
+                    type: integer
+                    readOnly: true
+                  limit:
+                    type: integer
+                    readOnly: true
+                  total:
+                    type: integer
+                    readOnly: true
+                readOnly: true
+              results:
+                type: array
+                items:
+                  type: object
+                  description: 'unknown response, don''t have any support requests yet'
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            default: '2.0'
+    Contracts-Response:
+      description: Contract List
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    contractNumber:
+                      type: string
+                      readOnly: true
+                    contractType:
+                      type: string
+                      enum:
+                        - Basic
+                      description: other values may be possible
+                      readOnly: true
+                    contractStartDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    contractRenewalDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    paymentMethod:
+                      type: string
+                      enum:
+                        - Lastschrift
+                      description: other values may be possible
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: account ID (number as string)
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+    Communications-Permissions-Response:
+      description: Communications-Permissions-Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    permissionsId:
+                      type: string
+                      enum:
+                        - Direct Marketing
+                      description: other values may be possible
+                      readOnly: true
+                    userId:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    permissionLastUpdatedDate:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    permissionStatus:
+                      type: boolean
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: account ID (number as string)
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            default: '2.0'
+    Communications-Notifications-Response:
+      description: Communications-Notifications-Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    readOnly: true
+                  offset:
+                    type: integer
+                    readOnly: true
+                  limit:
+                    type: integer
+                    readOnly: true
+                  total:
+                    type: integer
+                    readOnly: true
+                readOnly: true
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    notificationId:
+                      type: string
+                      description: 'Format: starts with "notify"'
+                      readOnly: true
+                    userId:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    notificationStatus:
+                      type: boolean
+                      readOnly: true
+                    notificationType:
+                      type: string
+                      description: Description of notification ID
+                      readOnly: true
+                    accountId:
+                      type: string
+                      description: account ID (number as string)
+                      readOnly: true
+                    interval:
+                      type: boolean
+                      readOnly: true
+                    intervalUnit:
+                      type: string
+                      enum:
+                        - monthly
+                      description: |-
+                        other values may exist
+                        also, this field is not always present
+                      readOnly: true
+                  readOnly: true
+                readOnly: true
+            readOnly: true
+      headers:
+        DataServiceVersion:
+          schema:
+            type: string
+            default: '2.0'
+tags:
+  - name: api
