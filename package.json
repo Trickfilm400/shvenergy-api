@@ -1,0 +1,52 @@
+{
+    "name": "@trickfilm400/shvenergy-api-client",
+    "version": "0.0.0-dev-01",
+    "description": "shvenergy-api",
+    "main": "./dist/index.js",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/trickfilm400/shvenergy-api"
+    },
+    "scripts": {
+        "start": "node .",
+        "build": "tsc",
+        "dev": "ts-node-dev --respawn --no-deps --rs --cls ./src/index.ts",
+        "eslint": "eslint src/**/*.ts",
+        "generate": "npx openapi-generator-cli generate --verbose --gitHost github.com --gitUserId trickfilm400 --gitRepoId shvenergy-api --skip-validate-spec -i ./shvenergy-api.yml -g typescript-axios -o ./dist/ --additional-properties=npmName=@trickfilm400/shvenergy-api-client,npmRepository=https://registry.npmjs.org/,npmVersion=0.0.1-hhh,useSingleRequestParameter=true,supportsES6=true,modelPackage=true,apiPackage=true,disallowAdditionalPropertiesIfNotPresent=false"
+    },
+    "keywords": [
+        "shvenergy-api",
+        "primagas",
+        "shvenergy",
+        "created-with-typescript-new-project-scaffolding",
+        "template",
+        "typescript",
+        "node",
+        "nodejs"
+    ],
+    "author": {
+        "email": "info@trickfilm400.de",
+        "name": "Trickfilm400"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.7.0",
+        "@types/node": "20.4.2",
+        "@typescript-eslint/eslint-plugin": "6.1.0",
+        "@typescript-eslint/parser": "6.1.0",
+        "axios": "^1.4.0",
+        "base64url": "^3.0.1",
+        "eslint": "8.45.0",
+        "eslint-plugin-prettier": "5.0.0",
+        "randomstring": "^1.3.0",
+        "ts-node": "10.9.1",
+        "ts-node-dev": "2.0.0",
+        "typescript": "5.1.6"
+    },
+    "files": [
+        "dist",
+        "typings"
+    ],
+    "typing": "types/index.d.ts"
+}
