@@ -31,8 +31,8 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "@openapitools/openapi-generator-cli": "^2.34.0",
-        "@types/node": "22.19.20",
+        "@openapitools/openapi-generator-cli": "^2.38.0",
+        "@types/node": "22.19.21",
         "@typescript-eslint/eslint-plugin": "7.18.0",
         "@typescript-eslint/parser": "7.18.0",
         "axios": "^1.17.0",
